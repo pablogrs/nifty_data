@@ -1,0 +1,64 @@
+/* increase top navbar height */
+.navbar, .navbar-default, .navbar-inverse, .shiny-navbar {
+  min-height: 90px !important;
+  height: 90px !important;
+}
+
+/* navbar brand and links vertical alignment */
+.navbar .navbar-brand, .navbar .navbar-nav > li > a,
+.shiny-navbar .navbar-brand, .shiny-navbar .nav > li > a {
+  line-height: 90px !important;
+  padding-top: 0.5rem !important;
+  padding-bottom: 0.5rem !important;
+  font-size: 16px !important;
+}
+
+/* increase content area height and padding */
+.tab-content {
+  min-height: 600px !important;
+  padding: 2rem !important;
+}
+
+/* increase navset card height and padding */
+.navset-card {
+  min-height: 500px !important;
+}
+
+.navset-card .card-header, .navset-card .nav {
+  padding-top: 1rem !important;
+  padding-bottom: 1rem !important;
+  min-height: 60px !important;
+}
+
+/* responsive */
+@media (max-width: 768px) {
+  .navbar, .shiny-navbar {
+    min-height: 70px !important;
+    height: auto !important;
+  }
+  .navbar .navbar-brand, .navbar .navbar-nav > li > a {
+    line-height: 1.4 !important;
+  }
+}
+
+/* Table styling for pandas DataFrames - More specific selectors */
+table.dataframe tbody tr:nth-child(odd) {
+    background-color: #f9f9f9 !important;
+}
+table.dataframe tbody tr:nth-child(even) {
+    background-color: #ffffff !important;
+}
+
+/* Alternative approach - target all table rows */
+.shiny-table tbody tr:nth-child(odd) {
+    background-color: #f9f9f9 !important;
+}
+.shiny-table tbody tr:nth-child(even) {
+    background-color: #ffffff !important;
+}
+
+/* Style the table headers */
+.dataframe thead th {
+    background-color: #e9ecef !important;
+    font-weight: bold !important;
+}

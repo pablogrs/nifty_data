@@ -9,4 +9,14 @@ print("Dataset loaded successfully.")
 
 # List of market return columns to be used in methods
 market_return_columns =['Nifty_Return', 'DowJones_Return', 'Nasdaq_Return',
-        'HangSeng_Return', 'Nikkei_Return']
+        'HangSeng_Return', 'Nikkei_Return', 'DAX_Return']
+
+tickers = {
+    "^NSEI": "Nifty",
+    "^DJI": "DowJones",
+    "^IXIC": "Nasdaq",
+    "^HSI": "HangSeng",
+    "^N225": "Nikkei",
+    "^GDAXI": "DAX",
+    "^VIX": "VIX"
+}
