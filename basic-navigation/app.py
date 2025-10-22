@@ -1,10 +1,9 @@
-from pathlib import Path
-from shiny import render
-from shiny.express import ui, input
+from shiny.express import ui, render
 
-import shared
 import phase1
 import phase2
+import phase3
+import phase4
 
 ui.head_content(
     ui.tags.link(rel="stylesheet", type="text/css", href="styles.css")
@@ -150,7 +149,7 @@ with ui.nav_panel("Phase 2"):
                     @render.plot(height=600)
                     def heat_map():
                         return phase2.heat_map_by_year_and_quarter()
-                with ui.nav_panel("Source Code"):
+                with ui.nav_panel(SOURCE_CODE):
                     ui.tags.pre(
                         ui.code(phase2.heat_map_by_year_and_quarter_code())
                     )
@@ -226,22 +225,31 @@ with ui.nav_panel("Phase 2"):
                     def nifty_open_dir():
                         return phase2.global_indices_against_nifty()
 
-                with ui.nav_panel("Source Code"):
+                with ui.nav_panel(SOURCE_CODE):
                     ui.tags.pre(
                         ui.code(phase2.global_indices_against_nifty_code())
                     )
 
 with ui.nav_panel("Phase 3"):
-    ui.markdown("""
-    # Global Indices 5 Years Performance Analytics
-
-    For each index:
-
-    a) **Box-Whisker Plot** of daily returns by "YEAR"
-    b) **Table** of daily returns by "YEAR" - (n, mean and std. deviation)
-    c) **Bar Plot** of median daily return by "YEAR"
-    d) **Heat Map** by "YEAR" and "QUARTER" showing median/mean returns
-    """)
+    with ui.accordion(id="phase3", open="Binary Logistic Regression Performance"):
+        with ui.accordion_panel("Binary Logistic Regression"):
+            with ui.navset_card_underline():
+                with ui.nav_panel("Binary Logistic Regression Model"):
+                    ui.markdown("""
+                    # Binary Logistic Regression Model Summary
+                    Statistical summary of the logistic regression model predicting Nifty 50 opening direction.
+                    """)
+                    ui.br()
+                    @render.table
+                    def blr_model():
+                        model = phase3.fit_binary_classification_model()
+                        return phase3.get_model_summary_table(model)
+                with ui.nav_panel(SOURCE_CODE):
+                    ui.tags.pre(
+                        ui.code(phase3.data_splitting_code()),
+                        ui.code(phase3.logistic_regression_code())
+                    )
+            ui.hr()
 
 with ui.nav_panel("Phase 4"):
 
