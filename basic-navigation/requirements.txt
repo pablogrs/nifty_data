@@ -2,3 +2,6 @@ shiny
 seaborn
 pandas
 jinja2
+statsmodels
+scikit-learn
+matplotlib

@@ -64,7 +64,7 @@ def calculate_variance_inflation_factors(feature_matrix):
 
     # Filter predictors with acceptable VIF
     acceptable_predictors = []
-    for predictor in feature_columns:
+    for predictor in independent_vars:
         vif_value = vif_scores.loc[vif_scores['predictor'] == predictor, 'VIF_score'].values[0]
         if vif_value <= 5:
             acceptable_predictors.append(predictor)
