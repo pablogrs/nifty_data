@@ -228,73 +228,48 @@ def correlation_matrix_code():
         plt.show()
     """
 
-def get_pre_covid_peaks(markets, market_price_columns, covid_crash_start):
-    pre_covid_period = markets[markets['Date'] < covid_crash_start]
+def plot_covid_recovery():
+    ## 3. Pre-Post Covid Performance Analytics
+    # Time required for a market to come back to pre-covid level
+
+    # Define COVID impact period
+    covid_crash_start = '2020-02-24'  # When markets started falling
+
+    # Convert Date column to datetime if not already
+    shared.markets['Date'] = pd.to_datetime(shared.markets['Date'])
+
+    # Define pre-COVID baseline (January 2020 peak levels)
+    pre_covid_period = shared.markets[shared.markets['Date'] < covid_crash_start]
     pre_covid_peaks = {}
-    for col in market_price_columns:
-        if col in markets.columns:
+
+    # Find pre-COVID peak levels for each market
+    for col in shared.market_price_columns:
+        if col in shared.markets.columns:
             pre_covid_peaks[col] = pre_covid_period[col].max()
-    return pre_covid_peaks
 
-def calculate_recovery_analysis(markets, market_price_columns, pre_covid_peaks, covid_crash_start):
-    recovery_analysis = []
-    for col in market_price_columns:
-        if col not in markets.columns:
-            continue
+    # Recovery timeline plot
+    plt.figure(figsize=(15, 10))
 
-        market_name = col.replace('_Close', '')
-        peak_level = pre_covid_peaks[col]
-
-        covid_period = markets[(markets['Date'] >= covid_crash_start) & (markets['Date'] <= '2020-04-30')]
-        covid_low = covid_period[col].min()
-        covid_low_date = covid_period[covid_period[col] == covid_low]['Date'].iloc[0]
-
-        max_drawdown = ((covid_low - peak_level) / peak_level) * 100
-
-        post_covid = markets[markets['Date'] > covid_low_date]
-        recovery_data = post_covid[post_covid[col] >= peak_level]
-
-        if not recovery_data.empty:
-            recovery_date = recovery_data['Date'].iloc[0]
-            recovery_days = (recovery_date - covid_low_date).days
-            recovered = True
-        else:
-            recovery_date = None
-            recovery_days = None
-            recovered = False
-
-        recovery_analysis.append({
-            'Market': market_name,
-            'Pre_COVID_Peak': peak_level,
-            'COVID_Low': covid_low,
-            'COVID_Low_Date': covid_low_date.strftime('%Y-%m-%d'),
-            'Max_Drawdown_%': round(max_drawdown, 2),
-            'Recovered': recovered,
-            'Recovery_Date': recovery_date.strftime('%Y-%m-%d') if recovery_date else 'Not yet',
-            'Recovery_Days': recovery_days,
-            'Current_Level': markets[col].iloc[-1] if col in markets.columns else None
-        })
-    return recovery_analysis
-
-def plot_covid_recovery(markets, market_price_columns, pre_covid_peaks, covid_crash_start):
-    plt.figure(figsize=(10, 20))
-    for i, col in enumerate(market_price_columns):
-        if col not in markets.columns:
+    for i, col in enumerate(shared.market_price_columns):
+        if col not in shared.markets.columns:
             continue
 
         plt.subplot(2, 3, i+1)
         market_name = col.replace('_Close', '')
 
-        plt.plot(markets['Date'], markets[col], label=market_name, alpha=0.7)
+        # Plot the price series
+        plt.plot(shared.markets['Date'], shared.markets[col], label=market_name, alpha=0.7)
 
+        # Mark pre-COVID peak
         peak_level = pre_covid_peaks[col]
         plt.axhline(y=peak_level, color='green', linestyle='--', alpha=0.8,
                     label=f'Pre-COVID Peak: {peak_level:.0f}')
 
-        covid_start_idx = markets[markets['Date'] >= covid_crash_start].index[0] if not markets[markets['Date'] >= covid_crash_start].empty else 0
-        covid_end_idx = markets[markets['Date'] >= '2020-04-30'].index[0] if not markets[markets['Date'] >= '2020-04-30'].empty else len(markets)
+        # Mark COVID period
+        covid_start_idx = shared.markets[shared.markets['Date'] >= covid_crash_start].index[0] if not shared.markets[shared.markets['Date'] >= covid_crash_start].empty else 0
+        covid_end_idx = shared.markets[shared.markets['Date'] >= '2020-04-30'].index[0] if not shared.markets[shared.markets['Date'] >= '2020-04-30'].empty else len(shared.markets)
 
-        plt.axvspan(markets['Date'].iloc[covid_start_idx], markets['Date'].iloc[covid_end_idx],
+        plt.axvspan(shared.markets['Date'].iloc[covid_start_idx], shared.markets['Date'].iloc[covid_end_idx],
                     alpha=0.2, color='red', label='COVID Crash Period')
 
         plt.title(f'{market_name} - COVID Recovery')
@@ -302,20 +277,62 @@ def plot_covid_recovery(markets, market_price_columns, pre_covid_peaks, covid_cr
         plt.ylabel('Price Level')
         plt.legend(fontsize=8)
         plt.xticks(rotation=45)
+
     plt.tight_layout()
 
-## 3. Pre-Post Covid Performance Analytics
-# Time required for a market to come back to pre-covid level
-def covid_analysis():
+def covid_recovery_code():
+    return """
+    ## 3. Pre-Post Covid Performance Analytics
+    # Time required for a market to come back to pre-covid level
+
+    # Define COVID impact period
     covid_crash_start = '2020-02-24'  # When markets started falling
 
+    # Convert Date column to datetime if not already
     shared.markets['Date'] = pd.to_datetime(shared.markets['Date'])
 
-    market_price_columns = ['Nifty_Close', 'DowJones_Close', 'Nasdaq_Close',
-                            'HangSeng_Close', 'Nikkei_Close', 'DAX_Close']
+    # Define pre-COVID baseline (January 2020 peak levels)
+    pre_covid_period = shared.markets[shared.markets['Date'] < covid_crash_start]
+    pre_covid_peaks = {}
 
-    pre_covid_peaks = get_pre_covid_peaks(shared.markets, market_price_columns, covid_crash_start)
-    plot_covid_recovery(shared.markets, market_price_columns, pre_covid_peaks, covid_crash_start)
+    # Find pre-COVID peak levels for each market
+    for col in shared.market_price_columns:
+        if col in shared.markets.columns:
+            pre_covid_peaks[col] = pre_covid_period[col].max()
+
+    # Recovery timeline plot
+    plt.figure(figsize=(15, 10))
+
+    for i, col in enumerate(shared.market_price_columns):
+        if col not in shared.markets.columns:
+            continue
+
+        plt.subplot(2, 3, i+1)
+        market_name = col.replace('_Close', '')
+
+        # Plot the price series
+        plt.plot(shared.markets['Date'], shared.markets[col], label=market_name, alpha=0.7)
+
+        # Mark pre-COVID peak
+        peak_level = pre_covid_peaks[col]
+        plt.axhline(y=peak_level, color='green', linestyle='--', alpha=0.8,
+                    label=f'Pre-COVID Peak: {peak_level:.0f}')
+
+        # Mark COVID period
+        covid_start_idx = shared.markets[shared.markets['Date'] >= covid_crash_start].index[0] if not shared.markets[shared.markets['Date'] >= covid_crash_start].empty else 0
+        covid_end_idx = shared.markets[shared.markets['Date'] >= '2020-04-30'].index[0] if not shared.markets[shared.markets['Date'] >= '2020-04-30'].empty else len(shared.markets)
+
+        plt.axvspan(shared.markets['Date'].iloc[covid_start_idx], shared.markets['Date'].iloc[covid_end_idx],
+                    alpha=0.2, color='red', label='COVID Crash Period')
+
+        plt.title(f'{market_name} - COVID Recovery')
+        plt.xlabel('Date')
+        plt.ylabel('Price Level')
+        plt.legend(fontsize=8)
+        plt.xticks(rotation=45)
+
+    plt.tight_layout()"""
+
 
 
 def nifty_open_dir_year():
@@ -383,8 +400,8 @@ def global_indices_against_nifty():
         plt.subplot(3, 2, i)
 
         # Create box plot
-        sns.boxplot(x='Nifty_Open_Dir', y=market, data=shared.markets,
-                    palette=["#BE6969", "#5EBCB6"])
+        sns.boxplot(hue='Nifty_Open_Dir', y=market, data=shared.markets,
+                    palette=["#BE6969", "#5EBCB6"], legend=False)
 
         # Clean up market name for title
         market_name = market.replace('_Return', '')

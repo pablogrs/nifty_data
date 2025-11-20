@@ -209,11 +209,11 @@ with ui.nav_panel("Phase 2"):
                     ui.br()
                     @render.plot(height=1024)
                     def covid_analysis():
-                        return phase2.covid_analysis()
+                        return phase2.plot_covid_recovery()
 
                 with ui.nav_panel(SOURCE_CODE):
                     ui.tags.pre(
-                        ui.code(""" text                      return """)
+                        ui.code(phase2.covid_recovery_code())
                     )
             ui.br()
             ui.hr()
