@@ -74,8 +74,33 @@ with ui.nav_panel("Phase 1"):
 
     ui.hr()
 
+    with ui.navset_card_underline(title="Normality Check of Daily Returns with Shapiro-Wilk Test and Lilliefors Test"):
+        with ui.nav_panel("Shapiro-Wilk Test Results"):
+            ui.markdown("""
+            ### Shapiro-Wilk and Lilliefors Test Results for Daily Returns
+            The test results below indicate that the daily returns for all global market indices
+            significantly deviate from a normal distribution (p-value < 0.05).
+            This statistical test contradicts the null hypothesis of normality, suggested by the QQ plots,
+            the actual return distributions have characteristics that differ from a true normal distribution.
+            """)
+            ui.br()
+            ui.tags.pre(
+                ui.code(phase1.normality_tests())
+            )
+
+        with ui.nav_panel(SOURCE_CODE):
+
+            ui.tags.pre(
+                ui.code(phase1.normality_tests_code())
+            )
+
     with ui.navset_card_underline(title="Consolidate Columns Snippet"):
         with ui.nav_panel(SOURCE_CODE):
+            ui.markdown("""
+            ### Code Snippet for Consolidating Date Columns and Cleaning Data
+            The following code snippet demonstrates how to extract temporal features from the 'Date' column,
+            remove weekends and specific holidays, and save the cleaned dataset to a CSV file.
+            """)
             ui.tags.pre(
                 ui.code(phase1.consolidate_columns_code())
             )

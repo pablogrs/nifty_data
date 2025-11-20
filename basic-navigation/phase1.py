@@ -131,3 +131,53 @@ print(markets.info())
 
 markets.to_csv("markets_with_returns.csv", index=False)
 '''
+
+def normality_tests():
+    """Perform Shapiro-Wilk and Lilliefors tests for normality on returns"""
+    from scipy.stats import shapiro
+    from statsmodels.stats.diagnostic import lilliefors
+
+    results = []
+
+    # Shapiro-Wilk test for normality
+    results.append("=== SHAPIRO-WILK TEST ===\n")
+    for ticker in shared.tickers.values():
+        stat, p = shapiro(shared.markets[f"{ticker}_Return"])
+        result = "follows" if p > 0.05 else "does not follow"
+        results.append(f"{ticker}_Return: Statistics={stat:.4f}, p-value={p:.4f}")
+        results.append(f"  → {result} a normal distribution\n")
+
+    results.append("\n=== LILLIEFORS TEST ===\n")
+    # Lilliefors test for normality
+    for ticker in shared.tickers.values():
+        stat, p = lilliefors(shared.markets[f"{ticker}_Return"])
+        result = "follows" if p > 0.05 else "does not follow"
+        results.append(f"{ticker}_Return: Statistics={stat:.4f}, p-value={p:.4f}")
+        results.append(f"  → {result} a normal distribution\n")
+
+    return "\n".join(results)
+
+def normality_tests_code():
+    """Return the code for normality tests"""
+    return '''
+from scipy.stats import shapiro
+from statsmodels.stats.diagnostic import lilliefors
+
+# Shapiro-Wilk test for normality
+for ticker in tickers.values():
+    stat, p = shapiro(markets[f"{ticker}_Return"])
+    print(f"Shapiro-Wilk Test for {ticker}_Return: Statistics={stat}, p-value={p}")
+    if p > 0.05:
+        print(f"{ticker}_Return follows a normal distribution (fail to reject H0)")
+    else:
+        print(f"{ticker}_Return does not follow a normal distribution (reject H0)")
+
+# Lilliefors test for normality
+for ticker in tickers.values():
+    stat, p = lilliefors(markets[f"{ticker}_Return"])
+    print(f"Lilliefors Test for {ticker}_Return: Statistics={stat}, p-value={p}")
+    if p > 0.05:
+        print(f"{ticker}_Return follows a normal distribution (fail to reject H0)")
+    else:
+        print(f"{ticker}_Return does not follow a normal distribution (reject H0)")
+'''
