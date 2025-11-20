@@ -255,26 +255,107 @@ with ui.nav_panel("Phase 2"):
                         ui.code(phase2.global_indices_against_nifty_code())
                     )
 
+SIGNIFICANT_VARS = ["HangSeng_Return", "Nikkei_Return", "DAX_Return", "VIX_Return"]
+
 with ui.nav_panel("Phase 3"):
-    with ui.accordion(id="phase3", open="Binary Logistic Regression Performance"):
-        with ui.accordion_panel("Binary Logistic Regression"):
+    with ui.accordion(id="acc_phase3", open="VIF Analysis"):
+        with ui.accordion_panel("VIF Analysis"):
             with ui.navset_card_underline():
-                with ui.nav_panel("Binary Logistic Regression Model"):
+                with ui.nav_panel("VIF Table"):
                     ui.markdown("""
-                    # Binary Logistic Regression Model Summary
-                    Statistical summary of the logistic regression model predicting Nifty 50 opening direction.
+                    # Variance Inflation Factor (VIF) Analysis
+                    This table displays the VIF scores for each independent variable in the logistic regression model.
+                    VIF values greater than 5 indicate potential multicollinearity issues. Variables with high VIF scores
+                    may need to be removed or the model revised to improve prediction accuracy.
                     """)
                     ui.br()
                     @render.table
-                    def blr_model():
-                        model = phase3.fit_binary_classification_model()
-                        return phase3.get_model_summary_table(model)
+                    def vif_table():
+                        return phase3.display_vif_analysis()
+
                 with ui.nav_panel(SOURCE_CODE):
                     ui.tags.pre(
-                        ui.code(phase3.data_splitting_code()),
-                        ui.code(phase3.logistic_regression_code())
+                        ui.code(phase3.display_vif_analysis_code())
                     )
+
+        with ui.accordion_panel("ROC Curve Analysis"):
+            with ui.navset_card_underline():
+                with ui.nav_panel("ROC Curve - Training Data"):
+                    ui.markdown("""
+                    # ROC Curve - Training Dataset
+                    The Receiver Operating Characteristic (ROC) curve illustrates the performance of the logistic regression
+                    model on the training dataset. The Area Under Curve (AUC) provides a single metric to evaluate model performance,
+                    where values closer to 1.0 indicate better classification ability.
+                    """)
+                    ui.br()
+                    @render.plot(height=600)
+                    def roc_train():
+                        return phase3.plot_roc_curve_train()
+
+                with ui.nav_panel(SOURCE_CODE):
+                    ui.tags.pre(
+                        ui.code(phase3.plot_roc_curve_train_code())
+                    )
+
             ui.hr()
+
+            with ui.navset_card_underline():
+                with ui.nav_panel("ROC Curve - Test Data"):
+                    ui.markdown("""
+                    # ROC Curve - Test Dataset
+                    This ROC curve evaluates the logistic regression model's performance on the test dataset.
+                    Comparing this with the training ROC curve helps assess whether the model generalizes well
+                    to unseen data or if there are signs of overfitting.
+                    """)
+                    ui.br()
+                    @render.plot(height=600)
+                    def roc_test():
+                        return phase3.plot_roc_curve_test()
+
+                with ui.nav_panel(SOURCE_CODE):
+                    ui.tags.pre(
+                        ui.code(phase3.plot_roc_curve_test_code())
+                    )
+
+        with ui.accordion_panel("Confusion Matrix Analysis"):
+            with ui.navset_card_underline():
+                with ui.nav_panel("Confusion Matrix - Training Data"):
+                    ui.markdown(f"""
+                    # Confusion Matrix - Training Dataset
+                    The confusion matrix visualizes the classification performance on the training dataset using
+                    an optimal threshold of {phase3.OPTIMAL_THRESHOLD}. It shows the counts of true positives, true negatives,
+                    false positives, and false negatives, along with detailed precision, recall, and F1-score metrics.
+                    """)
+                    ui.br()
+                    @render.plot(height=600)
+                    def cm_train():
+                        return phase3.plot_confusion_matrix_train()
+
+                with ui.nav_panel(SOURCE_CODE):
+                    ui.tags.pre(
+                        ui.code(phase3.plot_confusion_matrix_train_code())
+                    )
+
+            ui.hr()
+
+            with ui.navset_card_underline():
+                with ui.nav_panel("Confusion Matrix - Test Data"):
+                    ui.markdown(f"""
+                    # Confusion Matrix - Test Dataset
+                    This confusion matrix evaluates the model's predictions on the test dataset using the same
+                    threshold of {phase3.OPTIMAL_THRESHOLD}. Comparing these metrics with the training results helps
+                    determine if the model maintains consistent performance on new, unseen data.
+                    """)
+                    ui.br()
+                    @render.plot(height=600)
+                    def cm_test():
+                        return phase3.plot_confusion_matrix_test()
+
+                with ui.nav_panel(SOURCE_CODE):
+                    ui.tags.pre(
+                        ui.code(phase3.plot_confusion_matrix_test_code())
+                    )
+
 
 with ui.nav_panel("Phase 4"):
 
