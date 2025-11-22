@@ -426,15 +426,252 @@ with ui.nav_panel("Phase 3"):
 
 with ui.nav_panel("Phase 4"):
 
-    ui.markdown("""
+    with ui.accordion(id="acc_phase4", open="Naive Bayes Classifier"):
+        with ui.accordion_panel("Naive Bayes Classifier"):
+            ui.markdown("""
+            ## Gaussian Naive Bayes
+            Naive Bayes is a probabilistic classifier based on Bayes' theorem with the assumption of independence
+            between features. The Gaussian variant assumes that continuous features follow a normal distribution.
 
-    1. Create data partition into train and test data sets ( 80/20) (already done for Logistic Regression)
-    1. Apply Naïve Bayes Method on train data with Nifty Direction as dependent variable and previous day global market returns (and VIX) as independent variables.
-    1. Obtain ROC curve and AUC for train data
-    1. Obtain Confusion Matrix for train data
-    1. Obtain ROC curve and AUC for test data
-    1. Obtain Confusion Matrix for test data
-    1. Repeat steps 2 to 6 for Decision Tree
-    1. Repeat steps 2 to 6 for Random Forest Method
-    1. Compare AUC for test data in case of 4/5 methods and finalize the method
-    """)
+            This method is particularly useful for:
+            - Fast training and prediction
+            - Working well with small datasets
+            - Handling high-dimensional data effectively
+            """)
+
+            with ui.navset_card_underline():
+                with ui.nav_panel("ROC Curve - Training Data"):
+                    ui.markdown("""
+                    ### ROC Curve - Training Dataset
+                    The ROC curve shows the trade-off between true positive rate and false positive rate
+                    for the Naive Bayes model on training data.
+                    """)
+                    ui.br()
+                    @render.plot(height=600)
+                    def nb_roc_train():
+                        phase4.train_naive_bayes()
+                        return phase4.plot_roc_curve_nb_train()
+
+                with ui.nav_panel(SOURCE_CODE):
+                    ui.tags.pre(ui.code(phase4.train_naive_bayes_code()))
+
+            ui.hr()
+
+            with ui.navset_card_underline():
+                with ui.nav_panel("ROC Curve - Test Data"):
+                    ui.markdown("""
+                    ### ROC Curve - Test Dataset
+                    Evaluates the Naive Bayes model's performance on unseen test data.
+                    """)
+                    ui.br()
+                    @render.plot(height=600)
+                    def nb_roc_test():
+                        return phase4.plot_roc_curve_nb_test()
+
+                with ui.nav_panel(SOURCE_CODE):
+                    ui.tags.pre(ui.code(phase4.train_naive_bayes_code()))
+
+            ui.hr()
+
+            with ui.navset_card_underline():
+                with ui.nav_panel("Confusion Matrix - Training Data"):
+                    ui.markdown("""
+                    ### Confusion Matrix - Training Dataset
+                    Shows the classification performance with actual vs predicted values for training data.
+                    """)
+                    ui.br()
+                    @render.plot(height=600)
+                    def nb_cm_train():
+                        return phase4.plot_confusion_matrix_nb_train()
+
+                with ui.nav_panel(SOURCE_CODE):
+                    ui.tags.pre(ui.code(phase4.train_naive_bayes_code()))
+
+            ui.hr()
+
+            with ui.navset_card_underline():
+                with ui.nav_panel("Confusion Matrix - Test Data"):
+                    ui.markdown("""
+                    ### Confusion Matrix - Test Dataset
+                    Shows the classification performance with actual vs predicted values for test data.
+                    """)
+                    ui.br()
+                    @render.plot(height=600)
+                    def nb_cm_test():
+                        return phase4.plot_confusion_matrix_nb_test()
+
+                with ui.nav_panel(SOURCE_CODE):
+                    ui.tags.pre(ui.code(phase4.train_naive_bayes_code()))
+
+        with ui.accordion_panel("Decision Tree Classifier"):
+            ui.markdown("""
+            ## Decision Tree Classifier
+            Decision Trees are non-parametric models that learn decision rules from data features.
+            They create a tree-like structure of decisions to classify instances.
+
+            Key characteristics:
+            - Easy to interpret and visualize
+            - Can handle both numerical and categorical data
+            - Prone to overfitting (controlled with max_depth parameter)
+            """)
+
+            with ui.navset_card_underline():
+                with ui.nav_panel("ROC Curve - Training Data"):
+                    ui.markdown("""
+                    ### ROC Curve - Training Dataset
+                    The ROC curve for Decision Tree model on training data.
+                    """)
+                    ui.br()
+                    @render.plot(height=600)
+                    def dt_roc_train():
+                        phase4.train_decision_tree()
+                        return phase4.plot_roc_curve_dt_train()
+
+                with ui.nav_panel(SOURCE_CODE):
+                    ui.tags.pre(ui.code(phase4.train_decision_tree_code()))
+
+            ui.hr()
+
+            with ui.navset_card_underline():
+                with ui.nav_panel("ROC Curve - Test Data"):
+                    ui.markdown("""
+                    ### ROC Curve - Test Dataset
+                    Evaluates the Decision Tree model's performance on unseen test data.
+                    """)
+                    ui.br()
+                    @render.plot(height=600)
+                    def dt_roc_test():
+                        return phase4.plot_roc_curve_dt_test()
+
+                with ui.nav_panel(SOURCE_CODE):
+                    ui.tags.pre(ui.code(phase4.train_decision_tree_code()))
+
+            ui.hr()
+
+            with ui.navset_card_underline():
+                with ui.nav_panel("Confusion Matrix - Training Data"):
+                    ui.markdown("""
+                    ### Confusion Matrix - Training Dataset
+                    Shows the classification performance for training data.
+                    """)
+                    ui.br()
+                    @render.plot(height=600)
+                    def dt_cm_train():
+                        return phase4.plot_confusion_matrix_dt_train()
+
+                with ui.nav_panel(SOURCE_CODE):
+                    ui.tags.pre(ui.code(phase4.train_decision_tree_code()))
+
+            ui.hr()
+
+            with ui.navset_card_underline():
+                with ui.nav_panel("Confusion Matrix - Test Data"):
+                    ui.markdown("""
+                    ### Confusion Matrix - Test Dataset
+                    Shows the classification performance for test data.
+                    """)
+                    ui.br()
+                    @render.plot(height=600)
+                    def dt_cm_test():
+                        return phase4.plot_confusion_matrix_dt_test()
+
+                with ui.nav_panel(SOURCE_CODE):
+                    ui.tags.pre(ui.code(phase4.train_decision_tree_code()))
+
+        with ui.accordion_panel("Random Forest Classifier"):
+            ui.markdown("""
+            ## Random Forest Classifier
+            Random Forest is an ensemble method that creates multiple decision trees and combines
+            their predictions through voting. This reduces overfitting and improves generalization.
+
+            Advantages:
+            - More robust than single decision trees
+            - Handles large datasets with high dimensionality well
+            - Provides feature importance rankings
+            - Less prone to overfitting
+            """)
+
+            with ui.navset_card_underline():
+                with ui.nav_panel("ROC Curve - Training Data"):
+                    ui.markdown("""
+                    ### ROC Curve - Training Dataset
+                    The ROC curve for Random Forest model on training data.
+                    """)
+                    ui.br()
+                    @render.plot(height=600)
+                    def rf_roc_train():
+                        phase4.train_random_forest()
+                        return phase4.plot_roc_curve_rf_train()
+
+                with ui.nav_panel(SOURCE_CODE):
+                    ui.tags.pre(ui.code(phase4.train_random_forest_code()))
+
+            ui.hr()
+
+            with ui.navset_card_underline():
+                with ui.nav_panel("ROC Curve - Test Data"):
+                    ui.markdown("""
+                    ### ROC Curve - Test Dataset
+                    Evaluates the Random Forest model's performance on unseen test data.
+                    """)
+                    ui.br()
+                    @render.plot(height=600)
+                    def rf_roc_test():
+                        return phase4.plot_roc_curve_rf_test()
+
+                with ui.nav_panel(SOURCE_CODE):
+                    ui.tags.pre(ui.code(phase4.train_random_forest_code()))
+
+            ui.hr()
+
+            with ui.navset_card_underline():
+                with ui.nav_panel("Confusion Matrix - Training Data"):
+                    ui.markdown("""
+                    ### Confusion Matrix - Training Dataset
+                    Shows the classification performance for training data.
+                    """)
+                    ui.br()
+                    @render.plot(height=600)
+                    def rf_cm_train():
+                        return phase4.plot_confusion_matrix_rf_train()
+
+                with ui.nav_panel(SOURCE_CODE):
+                    ui.tags.pre(ui.code(phase4.train_random_forest_code()))
+
+            ui.hr()
+
+            with ui.navset_card_underline():
+                with ui.nav_panel("Confusion Matrix - Test Data"):
+                    ui.markdown("""
+                    ### Confusion Matrix - Test Dataset
+                    Shows the classification performance for test data.
+                    """)
+                    ui.br()
+                    @render.plot(height=600)
+                    def rf_cm_test():
+                        return phase4.plot_confusion_matrix_rf_test()
+
+                with ui.nav_panel(SOURCE_CODE):
+                    ui.tags.pre(ui.code(phase4.train_random_forest_code()))
+
+        with ui.accordion_panel("Model Comparison"):
+            with ui.navset_card_underline():
+                with ui.nav_panel("AUC Comparison Table"):
+                    ui.markdown("""
+                    ## Model Performance Comparison
+
+                    This table compares the Area Under the ROC Curve (AUC) for all three models
+                    on both training and test datasets.
+
+                    **Key Insights:**
+                    - Higher AUC indicates better model performance
+                    - Large differences between Train and Test AUC suggest overfitting
+                    - The model with the best Test AUC and smallest Train-Test difference is preferred
+                    """)
+                    ui.br()
+                    @render.table
+                    def model_comparison():
+                        return phase4.compare_models()
+
+                with ui.nav_panel(SOURCE_CODE):
+                    ui.tags.pre(ui.code(phase4.compare_models_code()))

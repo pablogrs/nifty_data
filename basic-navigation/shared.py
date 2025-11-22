@@ -39,7 +39,6 @@ def plot_aoc_roc_curve(fpr, tpr, roc_auc, title='ROC Curve', model_name=''):
     plt.ylabel('True Positive Rate')
     plt.title(title)
     plt.legend(loc="lower right")
-    plt.show()
 
     # # Print AUC
     dataset_type = "Train Dataset" if "Train" in title else "Test Dataset"
@@ -56,7 +55,6 @@ def plot_confusion_matrix(cm, cr, title='Confusion Matrix', model_name=''):
     plt.title(title)
     plt.xlabel('Predicted')
     plt.ylabel('Actual')
-    plt.show()
 
     # Use model_name in the print statement
     dataset_type = "Train Dataset" if "Train" in title else "Test Dataset"
