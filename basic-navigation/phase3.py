@@ -14,39 +14,119 @@ LR_MODEL_NAME = 'Logistic Regression Model'
 INDEPENDENT_VARS = ['DowJones_Return', 'Nasdaq_Return', 'HangSeng_Return', 'Nikkei_Return', 'DAX_Return', 'VIX_Return']
 SIGNIFICANT_VARS = ['HangSeng_Return', 'Nikkei_Return', 'DAX_Return', 'VIX_Return']
 OPTIMAL_THRESHOLD = 0.4753
+training_set, testing_set = None, None
+X_train, X_test, y_train, y_test = None, None, None, None
+model = None
 
-def prepare_predictive_data():
-    """Prepare data by adding Nifty_Dir_Open and creating train/test split."""
-    df_copy = shared.markets.copy()
-    df_copy['Nifty_Dir_Open'] = (df_copy['Nifty_Return'] > 0).astype(int)
-    training_set, testing_set = train_test_split(df_copy, test_size=0.2, random_state=123)
-    return df_copy, training_set, testing_set
+"""Prepare data by adding Nifty_Dir_Open and creating train/test split."""
+df_copy = shared.markets.copy()
+df_copy['Nifty_Dir_Open'] = (df_copy['Nifty_Return'] > 0).astype(int)
+training_set, testing_set = train_test_split(df_copy, test_size=0.2, random_state=123)
+
+
+def logistic_regression_summary():
+    # Add a constant to the independent variables (for the intercept term)
+    X_train = sm.add_constant(training_set[INDEPENDENT_VARS])
+    # Define the dependent variable
+    y_train = training_set['Nifty_Dir_Open']
+
+    # Build the logistic regression model
+    model = sm.Logit(y_train.astype(float), X_train.astype(float)).fit()
+
+    # Extract coefficients table
+    results_df = pd.DataFrame({
+        'Variable': model.params.index,
+        'Coefficient': model.params.values,
+        'Std Error': model.bse.values,
+        'z-value': model.tvalues.values,
+        'P-value': model.pvalues.values,
+        'Significant': ['***' if p < 0.001 else '**' if p < 0.01 else '*' if p < 0.05 else ''
+                       for p in model.pvalues.values]
+    })
+
+    # Add model statistics as a separate dataframe
+    stats_df = pd.DataFrame({
+        'Metric': ['Observations', 'Df Residuals', 'Df Model', 'Pseudo R-squared',
+                   'Log-Likelihood', 'LLR p-value'],
+        'Value': [f"{model.nobs:.0f}", f"{model.df_resid:.0f}", f"{model.df_model:.0f}",
+                 f"{model.prsquared:.5f}", f"{model.llf:.2f}", f"{model.llr_pvalue:.3e}"]
+    })
+
+    return results_df, stats_df
+
+def logistic_regression_summary_code():
+    return """
+    # Add a constant to the independent variables (for the intercept term)
+    X_train = sm.add_constant(training_set[INDEPENDENT_VARS])
+    # Define the dependent variable
+    y_train = training_set['Nifty_Dir_Open']
+
+    # Build the logistic regression model
+    model = sm.Logit(y_train.astype(float), X_train.astype(float)).fit()
+
+    # Summarize the model
+    return model.summary()"""
+
+def logistic_regression_significant_vars_summary():
+    global X_train, X_test, y_train, y_test, model  # Declare that you want to modify global variables
+
+    # Add a constant to the significant independent variables (for the intercept term)
+    X_train = sm.add_constant(training_set[SIGNIFICANT_VARS])
+    X_test = sm.add_constant(testing_set[SIGNIFICANT_VARS])
+    # Define the dependent variable
+    y_train = training_set['Nifty_Dir_Open']
+    y_test = testing_set['Nifty_Dir_Open']
+
+    # Build the logistic regression model
+    model = sm.Logit(y_train.astype(float), X_train.astype(float)).fit()
+
+    # Extract coefficients table
+    results_df = pd.DataFrame({
+        'Variable': model.params.index,
+        'Coefficient': model.params.values,
+        'Std Error': model.bse.values,
+        'z-value': model.tvalues.values,
+        'P-value': model.pvalues.values,
+        'Significant': ['***' if p < 0.001 else '**' if p < 0.01 else '*' if p < 0.05 else ''
+                       for p in model.pvalues.values]
+    })
+
+    # Add model statistics as a separate dataframe
+    stats_df = pd.DataFrame({
+        'Metric': ['Observations', 'Df Residuals', 'Df Model', 'Pseudo R-squared',
+                   'Log-Likelihood', 'LLR p-value'],
+        'Value': [f"{model.nobs:.0f}", f"{model.df_resid:.0f}", f"{model.df_model:.0f}",
+                 f"{model.prsquared:.5f}", f"{model.llf:.2f}", f"{model.llr_pvalue:.3e}"]
+    })
+
+    return results_df, stats_df
+
+def logistic_regression_significant_vars_summary_code():
+    return """
+    # Add a constant to the significant independent variables (for the intercept term)
+    X_train = sm.add_constant(training_set[SIGNIFICANT_VARS])
+    X_test = sm.add_constant(testing_set[SIGNIFICANT_VARS])
+    # Define the dependent variable
+    y_train = training_set['Nifty_Dir_Open']
+    y_test = training_set['Nifty_Dit_Open']
+
+    # Build the logistic regression model
+    model = sm.Logit(y_train.astype(float), X_train.astype(float)).fit()
+
+    # Summarize the model
+    return model.summary()
+    """
 
 def plot_roc_curve_train():
     """Generate ROC curve for training dataset."""
-    _, training_set, _ = prepare_predictive_data()
-
-    X_train = sm.add_constant(training_set[SIGNIFICANT_VARS])
-    y_train = training_set['Nifty_Dir_Open']
-
-    fitted_model = sm.Logit(y_train.astype(int), X_train.astype(int)).fit(disp=0)
-    predicted_probs = fitted_model.predict(X_train.astype(float))
+    predicted_probs = model.predict(X_train.astype(float))
 
     false_pos_rate, true_pos_rate, _ = roc_curve(y_train, predicted_probs)
     area_under_curve = auc(false_pos_rate, true_pos_rate)
 
-    plt.figure(figsize=(8, 6))
-    plt.plot(false_pos_rate, true_pos_rate, color='darkorange', lw=2,
-             label=f'ROC curve (AUC = {area_under_curve:.2f})')
-    plt.plot([0, 1], [0, 1], color='navy', lw=2, linestyle='--', label='Random Classifier')
-    plt.xlim([0.0, 1.0])
-    plt.ylim([0.0, 1.05])
-    plt.xlabel('False Positive Rate')
-    plt.ylabel('True Positive Rate')
-    plt.title('ROC Curve - Training Dataset')
-    plt.legend(loc="lower right")
-    plt.grid(alpha=0.3)
-    plt.tight_layout()
+    shared.plot_aoc_roc_curve(false_pos_rate, true_pos_rate, area_under_curve,
+                              title='ROC Curve - Train Dataset',
+                              model_name=LR_MODEL_NAME)
 
 def plot_roc_curve_train_code():
     return """
@@ -79,31 +159,14 @@ plt.show()
 
 def plot_roc_curve_test():
     """Generate ROC curve for test dataset."""
-    _, training_set, testing_set = prepare_predictive_data()
-
-    X_train = sm.add_constant(training_set[SIGNIFICANT_VARS])
-    X_test = sm.add_constant(testing_set[SIGNIFICANT_VARS])
-    y_train = training_set['Nifty_Dir_Open']
-    y_test = testing_set['Nifty_Dir_Open']
-
-    fitted_model = sm.Logit(y_train.astype(int), X_train.astype(int)).fit(disp=0)
-    predicted_probs_test = fitted_model.predict(X_test.astype(float))
+    predicted_probs_test = model.predict(X_test.astype(float))
 
     false_pos_rate, true_pos_rate, _ = roc_curve(y_test, predicted_probs_test)
     area_under_curve = auc(false_pos_rate, true_pos_rate)
 
-    plt.figure(figsize=(8, 6))
-    plt.plot(false_pos_rate, true_pos_rate, color='darkgreen', lw=2,
-             label=f'ROC curve (AUC = {area_under_curve:.2f})')
-    plt.plot([0, 1], [0, 1], color='navy', lw=2, linestyle='--', label='Random Classifier')
-    plt.xlim([0.0, 1.0])
-    plt.ylim([0.0, 1.05])
-    plt.xlabel('False Positive Rate')
-    plt.ylabel('True Positive Rate')
-    plt.title('ROC Curve - Test Dataset')
-    plt.legend(loc="lower right")
-    plt.grid(alpha=0.3)
-    plt.tight_layout()
+    shared.plot_aoc_roc_curve(false_pos_rate, true_pos_rate, area_under_curve,
+                              title='ROC Curve - Test Dataset',
+                              model_name=LR_MODEL_NAME)
 
 def plot_roc_curve_test_code():
     return """
@@ -138,27 +201,14 @@ plt.show()
 
 def plot_confusion_matrix_train():
     """Generate confusion matrix for training dataset."""
-    _, training_set, _ = prepare_predictive_data()
-
-    X_train = sm.add_constant(training_set[SIGNIFICANT_VARS])
-    y_train = training_set['Nifty_Dir_Open']
-
-    fitted_model = sm.Logit(y_train.astype(int), X_train.astype(int)).fit(disp=0)
-    predictions = fitted_model.predict(X_train.astype(float)) >= OPTIMAL_THRESHOLD
+    predictions = model.predict(X_train.astype(float)) >= OPTIMAL_THRESHOLD
 
     conf_matrix = confusion_matrix(y_train, predictions)
     class_report = classification_report(y_train, predictions)
 
-    plt.figure(figsize=(7, 5))
-    sns.heatmap(conf_matrix, annot=True, fmt='d', cmap='Blues',
-                xticklabels=['Predicted Down', 'Predicted Up'],
-                yticklabels=['Actual Down', 'Actual Up'])
-    plt.title(f'Confusion Matrix - Training Dataset\n(Threshold: {OPTIMAL_THRESHOLD})')
-    plt.xlabel('Predicted Label')
-    plt.ylabel('True Label')
-    plt.tight_layout()
-
-    print(f"\nClassification Report - {LR_MODEL_NAME} - Training Dataset:\n{class_report}")
+    shared.plot_confusion_matrix(conf_matrix, class_report,
+                                 title=f'Confusion Matrix - Train Dataset\n(Threshold: {OPTIMAL_THRESHOLD})',
+                                 model_name=LR_MODEL_NAME)
 
 def plot_confusion_matrix_train_code():
     return """
@@ -189,29 +239,14 @@ print(f"\\nClassification Report - {LR_MODEL_NAME} - Training Dataset:\\n{class_
 
 def plot_confusion_matrix_test():
     """Generate confusion matrix for test dataset."""
-    _, training_set, testing_set = prepare_predictive_data()
-
-    X_train = sm.add_constant(training_set[SIGNIFICANT_VARS])
-    X_test = sm.add_constant(testing_set[SIGNIFICANT_VARS])
-    y_train = training_set['Nifty_Dir_Open']
-    y_test = testing_set['Nifty_Dir_Open']
-
-    fitted_model = sm.Logit(y_train.astype(int), X_train.astype(int)).fit(disp=0)
-    predictions_test = fitted_model.predict(X_test.astype(float)) >= OPTIMAL_THRESHOLD
+    predictions_test = model.predict(X_test.astype(float)) >= OPTIMAL_THRESHOLD
 
     conf_matrix = confusion_matrix(y_test, predictions_test)
     class_report = classification_report(y_test, predictions_test)
 
-    plt.figure(figsize=(7, 5))
-    sns.heatmap(conf_matrix, annot=True, fmt='d', cmap='Greens',
-                xticklabels=['Predicted Down', 'Predicted Up'],
-                yticklabels=['Actual Down', 'Actual Up'])
-    plt.title(f'Confusion Matrix - Test Dataset\n(Threshold: {OPTIMAL_THRESHOLD})')
-    plt.xlabel('Predicted Label')
-    plt.ylabel('True Label')
-    plt.tight_layout()
-
-    print(f"\nClassification Report - {LR_MODEL_NAME} - Test Dataset:\n{class_report}")
+    shared.plot_confusion_matrix(conf_matrix, class_report,
+                                 title=f'Confusion Matrix - Test Dataset\n(Threshold: {OPTIMAL_THRESHOLD})',
+                                 model_name=LR_MODEL_NAME)
 
 def plot_confusion_matrix_test_code():
     return """
@@ -244,7 +279,6 @@ print(f"\\nClassification Report - {LR_MODEL_NAME} - Test Dataset:\\n{class_repo
 
 def display_vif_analysis():
     """Display VIF analysis table."""
-    _, training_set, _ = prepare_predictive_data()
     X_train = sm.add_constant(training_set[INDEPENDENT_VARS])
 
     vif_analysis = pd.DataFrame()

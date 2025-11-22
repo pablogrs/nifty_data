@@ -255,18 +255,52 @@ with ui.nav_panel("Phase 2"):
                         ui.code(phase2.global_indices_against_nifty_code())
                     )
 
-SIGNIFICANT_VARS = ["HangSeng_Return", "Nikkei_Return", "DAX_Return", "VIX_Return"]
 
 with ui.nav_panel("Phase 3"):
-    with ui.accordion(id="acc_phase3", open="VIF Analysis"):
+
+    with ui.accordion(id="acc_phase3", open="Initial Model - All Variables"):
+        with ui.accordion_panel("Initial Model - All Variables"):
+            with ui.navset_card_underline():
+                with ui.nav_panel("Model Summary"):
+                    ui.markdown("""
+                    # Initial Logistic Regression Model - All Variables
+                    This is the initial logistic regression model using all available independent variables:
+                    DowJones_Return, Nasdaq_Return, HangSeng_Return, Nikkei_Return, DAX_Return, and VIX_Return.
+
+                    The model summary below shows the coefficients, p-values, and other statistical measures
+                    for each variable. We'll use VIF analysis to check for multicollinearity before
+                    refining the model.
+
+                    **Significance codes:** *** p<0.001, ** p<0.01, * p<0.05
+                    """)
+                    ui.br()
+
+                    ui.h4("Model Statistics")
+                    @render.table
+                    def initial_model_stats():
+                        _, stats_df = phase3.logistic_regression_summary()
+                        return stats_df
+
+                    ui.br()
+                    ui.h4("Coefficients")
+                    @render.table
+                    def initial_model_coef():
+                        results_df, _ = phase3.logistic_regression_summary()
+                        return results_df
+
+                with ui.nav_panel(SOURCE_CODE):
+                    ui.tags.pre(
+                        ui.code(phase3.logistic_regression_summary_code())
+                    )
+
         with ui.accordion_panel("VIF Analysis"):
             with ui.navset_card_underline():
                 with ui.nav_panel("VIF Table"):
                     ui.markdown("""
                     # Variance Inflation Factor (VIF) Analysis
-                    This table displays the VIF scores for each independent variable in the logistic regression model.
-                    VIF values greater than 5 indicate potential multicollinearity issues. Variables with high VIF scores
-                    may need to be removed or the model revised to improve prediction accuracy.
+                    This table displays the VIF scores for each independent variable in the initial logistic regression model.
+                    Variables with high VIF scores indicate redundancy and should be considered for removal
+                    to improve model stability and interpretability. Since all variables have VIF lower than 5, we can keep them.
                     """)
                     ui.br()
                     @render.table
@@ -276,6 +310,39 @@ with ui.nav_panel("Phase 3"):
                 with ui.nav_panel(SOURCE_CODE):
                     ui.tags.pre(
                         ui.code(phase3.display_vif_analysis_code())
+                    )
+
+        with ui.accordion_panel("Adjusted Model - Significant Variables Only"):
+            with ui.navset_card_underline():
+                with ui.nav_panel("Model Summary"):
+                    ui.markdown("""
+                    # Adjusted Logistic Regression Model - Significant Variables
+                    Based on the VIF analysis and statistical significance, we've refined the model to include
+                    only the following variables: 'HangSeng_Return', 'Nikkei_Return', 'DAX_Return', 'VIX_Return'
+
+                    This adjusted model removes variables with p-value higher than 0.05 and focuses on
+                    the most predictive features.
+
+                    **Significance codes:** *** p<0.001, ** p<0.01, * p<0.05
+                    """)
+                    ui.br()
+
+                    ui.h4("Model Statistics")
+                    @render.table
+                    def adjusted_model_stats():
+                        _, stats_df = phase3.logistic_regression_significant_vars_summary()
+                        return stats_df
+
+                    ui.br()
+                    ui.h4("Coefficients")
+                    @render.table
+                    def adjusted_model_coef():
+                        results_df, _ = phase3.logistic_regression_significant_vars_summary()
+                        return results_df
+
+                with ui.nav_panel(SOURCE_CODE):
+                    ui.tags.pre(
+                        ui.code(phase3.logistic_regression_significant_vars_summary_code())
                     )
 
         with ui.accordion_panel("ROC Curve Analysis"):
