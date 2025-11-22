@@ -4,6 +4,7 @@ import phase1
 import phase2
 import phase3
 import phase4
+import phase5
 
 ui.head_content(
     ui.tags.link(rel="stylesheet", type="text/css", href="styles.css")
@@ -675,3 +676,159 @@ with ui.nav_panel("Phase 4"):
 
                 with ui.nav_panel(SOURCE_CODE):
                     ui.tags.pre(ui.code(phase4.compare_models_code()))
+
+
+with ui.nav_panel("Phase 5"):
+
+    with ui.accordion(id="acc_phase5", open="Data Overview"):
+        with ui.accordion_panel("Data Overview"):
+            ui.markdown("""
+            ## Twitter/X Data about Nifty50
+
+            This phase focuses on text mining and sentiment analysis of social media posts (tweets)
+            related to the Nifty50 index. We use Natural Language Processing (NLP) techniques to:
+
+            - Extract meaningful insights from unstructured text data
+            - Identify common topics and themes through word clouds
+            - Analyze the sentiment (positive, negative, or neutral) of market-related discussions
+            """)
+
+            with ui.navset_card_underline():
+                with ui.nav_panel("Sample Tweets"):
+                    ui.markdown("""
+                    ### Sample Tweets from Dataset
+                    Below are the first 10 tweets from our dataset showing raw text data
+                    before any preprocessing.
+                    """)
+                    ui.br()
+                    @render.table
+                    def sample_tweets():
+                        return phase5.get_sample_tweets(10)
+
+                with ui.nav_panel(SOURCE_CODE):
+                    ui.tags.pre(ui.code("""
+# Load Twitter data
+text = [line.rstrip() for line in open('twitter_dummy_data.txt')]
+text[0:10]  # Display first 10 tweets
+                    """))
+
+        with ui.accordion_panel("Text Preprocessing"):
+            ui.markdown("""
+            ## Text Preprocessing Pipeline
+
+            Before analysis, we clean and standardize the text data through several steps:
+
+            1. **Lowercase conversion** - Normalize text case
+            2. **Remove mentions, hashtags, URLs** - Filter out social media artifacts
+            3. **Remove punctuation** - Clean special characters
+            4. **Remove digits** - Filter numeric characters
+            5. **Remove stopwords** - Eliminate common words (the, is, at, etc.)
+            6. **Remove domain words** - Filter market-specific common terms
+
+            This preprocessing ensures we focus on meaningful content words.
+            """)
+
+            with ui.navset_card_underline():
+                with ui.nav_panel("Preprocessing Example"):
+                    ui.markdown("""
+                    ### Step-by-Step Preprocessing Example
+                    See how a sample tweet transforms through each preprocessing step.
+                    """)
+                    ui.br()
+                    @render.table
+                    def preprocessing_example():
+                        return phase5.get_preprocessing_example()
+
+                with ui.nav_panel(SOURCE_CODE):
+                    ui.tags.pre(ui.code(phase5.text_preprocessing_code()))
+
+        with ui.accordion_panel("Word Cloud Analysis"):
+            ui.markdown("""
+            ## Word Cloud Visualization
+
+            A word cloud provides a visual representation of word frequency in the dataset.
+            Larger words appear more frequently in the tweets, helping identify key themes
+            and topics in Nifty50 discussions.
+
+            - **Minimum word length**: 5 characters
+            - **Maximum words displayed**: 50
+            - **Filtering**: Domain-specific words removed for clarity
+            """)
+
+            with ui.navset_card_underline():
+                with ui.nav_panel("Word Cloud"):
+                    ui.markdown("""
+                    ### Generated Word Cloud
+                    Visual representation of the most frequent words in Nifty50 tweets.
+                    """)
+                    ui.br()
+                    @render.plot(height=800)
+                    def wordcloud_plot():
+                        return phase5.generate_wordcloud()
+
+                with ui.nav_panel(SOURCE_CODE):
+                    ui.tags.pre(ui.code(phase5.wordcloud_generation_code()))
+
+            ui.hr()
+
+            with ui.navset_card_underline():
+                with ui.nav_panel("Top Words Table"):
+                    ui.markdown("""
+                    ### Most Frequent Words
+                    Table showing the top 20 most frequently occurring words in the dataset.
+                    """)
+                    ui.br()
+                    @render.table
+                    def top_words():
+                        return phase5.get_top_words(20)
+
+                with ui.nav_panel(SOURCE_CODE):
+                    ui.tags.pre(ui.code(phase5.wordcloud_generation_code()))
+
+        with ui.accordion_panel("Sentiment Analysis"):
+            ui.markdown("""
+            ## VADER Sentiment Analysis
+
+            We use VADER (Valence Aware Dictionary and sEntiment Reasoner), a lexicon and
+            rule-based sentiment analysis tool specifically designed for social media text.
+
+            **Sentiment Classification:**
+            - **Positive**: Compound score ≥ 0.05
+            - **Negative**: Compound score ≤ -0.05
+            - **Neutral**: -0.05 < Compound score < 0.05
+
+            VADER is particularly effective for:
+            - Social media text with slang and abbreviations
+            - Handling emoticons and punctuation emphasis
+            - Capturing sentiment intensity
+            """)
+
+            with ui.navset_card_underline():
+                with ui.nav_panel("Sentiment Summary"):
+                    ui.markdown("""
+                    ### Sentiment Distribution Summary
+                    Breakdown of tweet sentiments with counts and percentages.
+                    """)
+                    ui.br()
+                    @render.table
+                    def sentiment_summary():
+                        return phase5.get_sentiment_summary()
+
+                with ui.nav_panel(SOURCE_CODE):
+                    ui.tags.pre(ui.code(phase5.sentiment_analysis_code()))
+
+            ui.hr()
+
+            with ui.navset_card_underline():
+                with ui.nav_panel("Sentiment Pie Chart"):
+                    ui.markdown("""
+                    ### Sentiment Distribution - Pie Chart
+                    Alternative visualization showing sentiment proportions.
+                    """)
+                    ui.br()
+                    @render.plot(height=600)
+                    def sentiment_pie():
+                        return phase5.plot_sentiment_pie()
+
+                with ui.nav_panel(SOURCE_CODE):
+                    ui.tags.pre(ui.code(phase5.sentiment_visualization_code()))
