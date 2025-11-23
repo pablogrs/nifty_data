@@ -390,6 +390,10 @@ def nifty_open_dir_year_code():
     """
 
 def global_indices_against_nifty():
+    # Create Nifty_Open_Dir if it doesn't exist
+    if 'Nifty_Open_Dir' not in shared.markets.columns:
+        shared.markets['Nifty_Open_Dir'] = (shared.markets['Nifty_Open'] > shared.markets['Nifty_Close'].shift(1)).astype(int)
+
     # Create box plots for each market's returns grouped by Nifty_Open_Dir
     plt.figure(figsize=(20, 12))
 
