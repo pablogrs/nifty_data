@@ -5,3 +5,6 @@ jinja2
 statsmodels
 scikit-learn
 matplotlib
+numpy
+nltk
+wordcloud

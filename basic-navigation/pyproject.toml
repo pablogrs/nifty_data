@@ -1,0 +1,17 @@
+[project]
+name = "market-analysis-dashboard"
+version = "0.1.0"
+description = "Nifty/Dow Jones Direction Prediction using Machine Learning - Interactive Dashboard"
+requires-python = ">=3.10"
+dependencies = [
+    "shiny",
+    "seaborn",
+    "pandas",
+    "jinja2",
+    "statsmodels",
+    "scikit-learn",
+    "matplotlib",
+    "numpy",
+    "nltk",
+    "wordcloud",
+]

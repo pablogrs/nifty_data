@@ -2,6 +2,7 @@ from pathlib import Path
 import matplotlib.pyplot as plt
 import pandas as pd
 import seaborn as sns
+import nltk
 
 print("Loading dataset from shared.py...")
 app_dir = Path(__file__).parent
@@ -16,6 +17,10 @@ market_return_columns =['Nifty_Return', 'DowJones_Return', 'Nasdaq_Return',
 market_price_columns = ['Nifty_Close', 'DowJones_Close', 'Nasdaq_Close',
                        'HangSeng_Close', 'Nikkei_Close', 'DAX_Close']
 
+
+nltk.download('stopwords')
+nltk.download('punkt_tab')
+nltk.download('vader_lexicon')
 
 tickers = {
     "^NSEI": "Nifty",

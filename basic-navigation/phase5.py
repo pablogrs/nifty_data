@@ -22,8 +22,8 @@ sentiments = None
 sentiment_df = None
 
 # Load data
-app_dir = Path(__file__).parent.parent
-data_file = app_dir / "twitter_dummy_data.txt"
+app_dir = Path(__file__).parent
+data_file = app_dir / "Datasets/twitter_dummy_data.txt"
 text = [line.rstrip() for line in open(data_file)]
 
 
