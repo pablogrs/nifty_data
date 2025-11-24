@@ -1,1 +1,13 @@
 yfinance
+pandas
+numpy
+matplotlib
+seaborn
+statsmodels
+scikit-learn
+nltk
+textblob
+wordcloud
+python-pptx
+shiny
+scipy
