@@ -686,6 +686,9 @@ with ui.nav_panel("Phase 5"):
             - Extract meaningful insights from unstructured text data
             - Identify common topics and themes through word clouds
             - Analyze the sentiment (positive, negative, or neutral) of market-related discussions
+
+            For this analysis, we generated a synthetic dataset of tweets mentioning Nifty50
+            to demonstrate the text mining process.
             """)
 
             with ui.navset_card_underline():
@@ -702,9 +705,9 @@ with ui.nav_panel("Phase 5"):
 
                 with ui.nav_panel(SOURCE_CODE):
                     ui.tags.pre(ui.code("""
-# Load Twitter data
-text = [line.rstrip() for line in open('twitter_dummy_data.txt')]
-text[0:10]  # Display first 10 tweets
+                    # Load Twitter data
+                    text = [line.rstrip() for line in open('twitter_dummy_data.txt')]
+                    text[0:10]  # Display first 10 tweets
                     """))
 
         with ui.accordion_panel("Text Preprocessing"):
@@ -792,10 +795,8 @@ text[0:10]  # Display first 10 tweets
             - **Negative**: Compound score ≤ -0.05
             - **Neutral**: -0.05 < Compound score < 0.05
 
-            VADER is particularly effective for:
-            - Social media text with slang and abbreviations
-            - Handling emoticons and punctuation emphasis
-            - Capturing sentiment intensity
+            On this analysis we intentionally left the domain-specific words in the tweets to capture sentiment
+            related to market terms. Also emoticons and slang are preserved for better sentiment detection.
             """)
 
             with ui.navset_card_underline():
