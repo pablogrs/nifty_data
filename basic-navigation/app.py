@@ -32,15 +32,6 @@ with ui.nav_panel("Phase 1"):
 
             All data spans from January 2019 to April 2025, with missing values handled using
             linear interpolation to ensure continuity across different market holidays.
-
-            Given the charactistics of the VIX index, it is included in the dataset but not used in
-            return calculations for other markets.
-            Cboe Volatility Index® (VIX®)
-            The Cboe Voltility Index® (VIX® ) is considered by many to be the world's premier barometer
-            of equity market volatility. The VIX Index is based on real-time prices of options on the
-            S&P 500® Index (SPX) and is designed to reflect investors' consensus view of future
-            (30-day) expected stock market volatility. The VIX Index is often referred to as the market's "fear gauge".
-
             """)
             ui.br()
             @render.table
@@ -438,6 +429,9 @@ with ui.nav_panel("Phase 4"):
             - Fast training and prediction
             - Working well with small datasets
             - Handling high-dimensional data effectively
+
+            In our analysis, the Naive Bayes classifier provides a baseline for comparison with more complex models.
+            It also performs reasonably well, almost at the random forest level on test data.
             """)
 
             with ui.navset_card_underline():
@@ -513,7 +507,7 @@ with ui.nav_panel("Phase 4"):
             Key characteristics:
             - Easy to interpret and visualize
             - Can handle both numerical and categorical data
-            - Prone to overfitting (controlled with max_depth parameter)
+            - Prone to overfitting, we mitigate this by limiting tree depth.
             """)
 
             with ui.navset_card_underline():
@@ -585,11 +579,13 @@ with ui.nav_panel("Phase 4"):
             Random Forest is an ensemble method that creates multiple decision trees and combines
             their predictions through voting. This reduces overfitting and improves generalization.
 
-            Advantages:
-            - More robust than single decision trees
-            - Handles large datasets with high dimensionality well
-            - Provides feature importance rankings
-            - Less prone to overfitting
+                Advantages:
+                - More robust than single decision trees
+                - Handles large datasets with high dimensionality well
+                - Provides feature importance rankings
+                - Less prone to overfitting
+
+            In this case it is performing better than both Decision Tree and Naive Bayes classifiers on test data.
             """)
 
             with ui.navset_card_underline():
@@ -665,9 +661,8 @@ with ui.nav_panel("Phase 4"):
                     on both training and test datasets.
 
                     **Key Insights:**
-                    - Higher AUC indicates better model performance
-                    - Large differences between Train and Test AUC suggest overfitting
-                    - The model with the best Test AUC and smallest Train-Test difference is preferred
+                    - Decision Tree shows the highest AUC on training data, indicating strong fit.
+                    - Random Forest performs best on test data, suggesting better generalization.
                     """)
                     ui.br()
                     @render.table

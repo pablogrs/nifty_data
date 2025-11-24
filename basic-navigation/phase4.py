@@ -290,24 +290,21 @@ def plot_confusion_matrix_rf_test():
 
 def compare_models():
     """Compare AUC scores across all models."""
-    # Ensure all models are trained and evaluated
-    if None in [roc_auc_train_nb, roc_auc_test_nb, roc_auc_train_dt,
-                roc_auc_test_dt, roc_auc_train_rf, roc_auc_test_rf]:
-        # Train models if not already trained
-        if nb_model is None:
-            train_naive_bayes()
-            plot_roc_curve_nb_train()
-            plot_roc_curve_nb_test()
+    # Ensure all models are trained and evaluated first
+    if nb_model is None:
+        train_naive_bayes()
+        plot_roc_curve_nb_train()
+        plot_roc_curve_nb_test()
 
-        if dt_model is None:
-            train_decision_tree()
-            plot_roc_curve_dt_train()
-            plot_roc_curve_dt_test()
+    if dt_model is None:
+        train_decision_tree()
+        plot_roc_curve_dt_train()
+        plot_roc_curve_dt_test()
 
-        if rf_model is None:
-            train_random_forest()
-            plot_roc_curve_rf_train()
-            plot_roc_curve_rf_test()
+    if rf_model is None:
+        train_random_forest()
+        plot_roc_curve_rf_train()
+        plot_roc_curve_rf_test()
 
     models = [NB_MODEL_NAME, DT_MODEL_NAME, RF_MODEL_NAME]
     train_aucs = [roc_auc_train_nb, roc_auc_train_dt, roc_auc_train_rf]
@@ -317,10 +314,11 @@ def compare_models():
         'Model': models,
         'Train AUC': train_aucs,
         'Test AUC': test_aucs,
-        'Difference': [abs(train - test) for train, test in zip(train_aucs, test_aucs)]
     })
 
     return comparison_df
+
+
 
 
 # ============================================================================
