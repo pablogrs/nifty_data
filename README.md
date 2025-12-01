@@ -166,16 +166,6 @@ The app provides an interactive dashboard with:
 - Organized navigation by project phase
 - Responsive design with custom CSS styling
 
-## Results Summary
-
-### Model Performance Comparison
-
-| Model | Train AUC | Test AUC | Train Accuracy | Test Accuracy |
-|-------|-----------|----------|----------------|---------------|
-| Logistic Regression | 0.59 | 0.53 | 56% | 57% |
-| Naive Bayes | TBD | TBD | TBD | TBD |
-| Decision Tree | TBD | TBD | TBD | TBD |
-| Random Forest | TBD | TBD | TBD | TBD |
 
 ### Key Insights
 
@@ -193,22 +183,6 @@ The app provides an interactive dashboard with:
   - Experiment with deep learning models (LSTM, GRU)
   - Integrate real-time sentiment analysis
   - Develop pairs trading strategies
-
-## Generating Project Presentation
-
-Create a PowerPoint presentation following project guidelines:
-
-```bash
-python presentation_guidelines.py
-```
-
-This generates `Project_Presentation.pptx` with:
-- Title slide with project details
-- Background and motivation
-- Data sources and methodology
-- Analysis plan and phases
-- Challenges encountered
-- Project timeline
 
 ## Technical Requirements
 
