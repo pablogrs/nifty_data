@@ -578,12 +578,7 @@ with ui.nav_panel("Phase 4"):
             ## Random Forest Classifier
             Random Forest is an ensemble method that creates multiple decision trees and combines
             their predictions through voting. This reduces overfitting and improves generalization.
-
-                Advantages:
-                - More robust than single decision trees
-                - Handles large datasets with high dimensionality well
-                - Provides feature importance rankings
-                - Less prone to overfitting
+            The number of trees and depth are limited to avoid overfitting for this dataset.
 
             In this case it is performing better than both Decision Tree and Naive Bayes classifiers on test data.
             """)
@@ -660,7 +655,7 @@ with ui.nav_panel("Phase 4"):
                     This table compares the Area Under the ROC Curve (AUC) for all three models
                     on both training and test datasets.
 
-                    **Key Insights:**
+                    Key observations:
                     - Decision Tree shows the highest AUC on training data, indicating strong fit.
                     - Random Forest performs best on test data, suggesting better generalization.
                     """)
